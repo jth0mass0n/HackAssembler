@@ -1,0 +1,9 @@
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackAssembler\HackAssembler\bin\Debug\HackAssembler.exe.config
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackAssembler\HackAssembler\bin\Debug\HackAssembler.exe
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackAssembler\HackAssembler\bin\Debug\HackAssembler.pdb
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackAssembler\HackAssembler\obj\Debug\HackAssembler.csprojResolveAssemblyReference.cache
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackAssembler\HackAssembler\obj\Debug\HackAssembler.Form1.resources
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackAssembler\HackAssembler\obj\Debug\HackAssembler.Properties.Resources.resources
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackAssembler\HackAssembler\obj\Debug\HackAssembler.csproj.GenerateResource.Cache
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackAssembler\HackAssembler\obj\Debug\HackAssembler.exe
+c:\users\jthomasson\documents\visual studio 2013\Projects\HackAssembler\HackAssembler\obj\Debug\HackAssembler.pdb
