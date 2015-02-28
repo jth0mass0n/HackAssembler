@@ -210,6 +210,7 @@
             this.btnRun.Size = new System.Drawing.Size(76, 1126);
             this.btnRun.TabIndex = 2;
             this.btnRun.UseVisualStyleBackColor = true;
+            this.btnRun.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
             // frmStatus
             // 
