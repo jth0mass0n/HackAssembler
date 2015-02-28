@@ -42,31 +42,100 @@ namespace HackAssembler
            
         }
 
-        private void ParseFile()
+        /// <summary>
+        /// first pass will parse labels and add them to the symbol table
+        /// </summary>
+        private SymbolTable FirstPass()
         {
+            var symbols = new SymbolTable();//instantiate symbol table
+
             if (!string.IsNullOrEmpty(_fileName))
             {
                 var prsr = new Parser(_fileName);
-                var sbuilder = new StringBuilder(); //used to hold our output
                 var sbsource = new StringBuilder(); //used to hold source text
-                //var bits = new BitArray(16); //16 bit array of bits to hold our finished binary
+                
+                int lineNo = 0; //used to track line number of current command
+
+                lblStatus.Text = "Adding Labels to Symbol Table... ";
+                frmStatus.Refresh();
 
                 while (prsr.HasMoreCommands)
                 {
 
                     prsr.Advance();
                     sbsource.AppendLine(prsr.CurrentCommand);
-                    //rtbSource.Text += prsr.CurrentCommand + Environment.NewLine;
+                   
+                    if (prsr.CommandType == Enums.Enumerations.CommandType.A_COMMAND || prsr.CommandType == Enums.Enumerations.CommandType.C_COMMAND)
+                    {
+                        lineNo++; //increment line number
+                    }
+                    else if (prsr.CommandType == Enums.Enumerations.CommandType.L_COMMAND)
+                    {
+                        //need to add label to symbol table 
+                        var smbl = prsr.Symbol;
+                        if (!symbols.Contains(smbl))
+                        {
+                            symbols.AddEntry(smbl, lineNo + 1);  //add address of next command
+                        }
+                    }
+                }
+
+                prsr.GarbageCollection();
+                rtbSource.Text = sbsource.ToString();
+            }
+
+            lblStatus.Text = "File " + _fileName + " Parsed Successfully.";
+            frmStatus.Refresh();
+
+            return symbols;
+        }
+
+        /// <summary>
+        /// second pass will parse line by line and add remaining variables to symbol table
+        /// </summary>
+        private void SecondPass(SymbolTable symbols)
+        {
+            if (!string.IsNullOrEmpty(_fileName))
+            {
+                var prsr = new Parser(_fileName);
+                var sbuilder = new StringBuilder(); //used to hold our output
+                int currentRamAddress = 16; //starting ram position for variables is 16
+
+                while (prsr.HasMoreCommands)
+                {
+
+                    prsr.Advance();
+
                     lblStatus.Text = "Parsing Line: " + sbuilder.Length;
                     frmStatus.Refresh();
+
                     if (prsr.CommandType == Enums.Enumerations.CommandType.A_COMMAND)
                     {
+                        //need to see if symbol is in our symbol table already
+                        var symbl = prsr.Symbol;
+                        int numInt;
+                        if(!int.TryParse(symbl, out numInt)){
+                             //if this symbol is not a number then it needs to be in the symbol table
+                            if (symbols.Contains(symbl))
+                            {
+                                //replace current symbol with numeric meaning
+                                numInt = symbols.GetAddress(symbl);
+                            }
+                            else
+                            {
+                                numInt = currentRamAddress;
+
+                                //no symbol in table yet, so put it in
+                                symbols.AddEntry(symbl, currentRamAddress);
+                                currentRamAddress++; //increment ram address for next variable
+                            }
+                        }
+
                         //need to translate decimal value to binary
-                        //rtbDestination.Text += "0";
-                        var a = Convert.ToString(int.Parse(prsr.Symbol), 2); //first convert to binary representation
+                        var a = Convert.ToString(numInt, 2); //first convert to binary representation
                         var zro = 0;
                         var padding = zro.ToString("D" + (16 - a.Length));
-                        //rtbDestination.Text += padding + a;
+                        
                         sbuilder.Append(padding + a);
                     }
                     else if (prsr.CommandType == Enums.Enumerations.CommandType.C_COMMAND)
@@ -106,11 +175,19 @@ namespace HackAssembler
 
                 prsr.GarbageCollection();
                 rtbDestination.Text = sbuilder.ToString();
-                rtbSource.Text = sbsource.ToString();
             }
 
             lblStatus.Text = "File " + _fileName + " Parsed Successfully.";
             frmStatus.Refresh();
+        }
+
+        private void ParseFile()
+        {
+            //process labels
+            var symbols = FirstPass();
+
+            //process everything else
+            SecondPass(symbols);
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
